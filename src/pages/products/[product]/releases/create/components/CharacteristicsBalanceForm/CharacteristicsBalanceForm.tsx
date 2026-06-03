@@ -1,16 +1,7 @@
 import React, { useEffect } from 'react';
-import {
-  Box,
-  FormControlLabel,
-  Grid,
-  Switch,
-  Typography,
-} from '@mui/material';
+import { Box, FormControlLabel, Grid, Switch, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import {
-  Characteristic,
-  PreConfigData,
-} from '@customTypes/preConfig';
+import { Characteristic, PreConfigData } from '@customTypes/preConfig';
 import { StyledSlider } from '@components/Equalizer/EqualizerSlider/styles';
 import { Container } from '@mui/system';
 import SectionTooltip from '../SectionTooltip/SectionTooltip';
@@ -20,6 +11,7 @@ interface CharacteristicsBalanceFormProps {
   setDinamicBalance: any;
   configPageData: PreConfigData;
   setConfigPageData: any;
+  latestCharacteristicsValues?: Record<string, number>;
 }
 
 function calculateProportion(
@@ -46,7 +38,10 @@ function adjustGoal(
   );
 }
 
-function redistributeGoals(characteristics: Characteristic[]) {
+function redistributeGoals(
+  characteristics: Characteristic[],
+  latestValues?: Record<string, number>
+) {
   const activeChars = characteristics.filter(
     (characteristic) => characteristic.active,
   );
@@ -65,12 +60,14 @@ function redistributeGoals(characteristics: Characteristic[]) {
     return characteristics;
   }
 
-  const baseValue = Math.floor(100 / activeChars.length);
-  const remainder = 100 % activeChars.length;
+  const totalRealValue = activeChars.reduce((acc, char) => {
+    const realVal = latestValues?.[char.key] ?? 1;
+    return acc + realVal;
+  }, 0);
 
-  let activeIndex = 0;
+  let allocatedSum = 0;
 
-  return characteristics.map((characteristic) => {
+  const updatedChars = characteristics.map((characteristic) => {
     if (!characteristic.active) {
       return {
         ...characteristic,
@@ -78,17 +75,32 @@ function redistributeGoals(characteristics: Characteristic[]) {
       };
     }
 
-    activeIndex += 1;
+    const realVal = latestValues?.[characteristic.key] ?? 1;
+    const rawPercentage = Math.floor((realVal / totalRealValue) * 100);
 
-    const isLastActive = activeIndex === activeChars.length;
+    allocatedSum += rawPercentage;
 
     return {
       ...characteristic,
-      goal: isLastActive
-        ? baseValue + remainder
-        : baseValue,
+      goal: rawPercentage,
     };
   });
+
+  const remainder = 100 - allocatedSum;
+
+  if (remainder > 0 && activeChars.length > 0) {
+    const lastActiveKey = activeChars[activeChars.length - 1].key;
+
+    const charToBoost = updatedChars.find(
+      (c) => c.key === lastActiveKey
+    );
+
+    if (charToBoost) {
+      charToBoost.goal += remainder;
+    }
+  }
+
+  return updatedChars;
 }
 
 export default function CharacteristicsBalanceForm({
@@ -96,6 +108,7 @@ export default function CharacteristicsBalanceForm({
   setConfigPageData,
   dinamicBalance,
   setDinamicBalance,
+  latestCharacteristicsValues,
 }: CharacteristicsBalanceFormProps) {
   const { t } = useTranslation('plan_release');
 
@@ -186,10 +199,11 @@ export default function CharacteristicsBalanceForm({
         ...prevData,
         characteristics: redistributeGoals(
           prevData.characteristics,
+          latestCharacteristicsValues 
         ),
       };
     });
-  }, [setConfigPageData]);
+  }, [setConfigPageData, latestCharacteristicsValues]);
 
   return (
     <>

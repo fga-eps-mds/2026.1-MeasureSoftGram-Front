@@ -35,6 +35,10 @@ function ReleaseCreation() {
   const [preConfigEntitiesRelationship, setPreConfigEntitiesRelationship] = useState<PreConfigEntitiesRelationship[]>();
   const [releaseGoal, setReleaseGoal] = useState<any>();
   const [releaseConflict, setReleaseConflict] = useState<string>();
+  
+  // 1. NOVO ESTADO: Adicionado para guardar os valores reais da API
+  const [latestValueCharacteristics, setLatestValueCharacteristics] = useState<any[]>([]);
+
   const { enqueueSnackbar } = useSnackbar()
 
   const router = useRouter();
@@ -73,6 +77,14 @@ function ReleaseCreation() {
 
           currentReleaseGoal = await productQuery.getCurrentReleaseGoal(organization, productIdentifier);
           setReleaseGoal(currentReleaseGoal.data);
+
+          // 2. NOVA CHAMADA API: Busca os valores reais (latest) da última medição
+          try {
+            const latestValuesResult = await productQuery.getCharacteristicsLatestValues(organization, productIdentifier);
+            setLatestValueCharacteristics(latestValuesResult?.data || []);
+          } catch (e) {
+            console.warn("Não foi possível buscar as últimas medições reais", e);
+          }
 
           await getPreConfigs(organization, productIdentifier, currentReleaseGoal.data)
         } catch (error) {
@@ -232,7 +244,7 @@ function ReleaseCreation() {
       case 2:// eslint-disable-next-line react/jsx-no-bind
         return <ReferenceValuesForm configPageData={configPageData!} defaultPageData={defaultPageData!} setConfigPageData={setConfigPageData} />
       case 3:// eslint-disable-next-line react/jsx-no-bind
-        return <CharacteristicsBalanceForm characteristicRelations={balanceMatrix} configPageData={configPageData!} setConfigPageData={setConfigPageData} dinamicBalance={dinamicBalance} setDinamicBalance={handleChangeDinamicBalance} />
+        return <CharacteristicsBalanceForm characteristicRelations={balanceMatrix} configPageData={configPageData!} setConfigPageData={setConfigPageData} dinamicBalance={dinamicBalance} setDinamicBalance={handleChangeDinamicBalance} latestCharacteristicsValues={valoresFormatados} />
       default:
         break
     }
@@ -427,6 +439,29 @@ function ReleaseCreation() {
       {label}
     </Button>
   }
+
+  // 3. NOVO: Transforma o array que veio da API num objeto antes de renderizar
+  const valoresFormatados: Record<string, number> = {};
+  if (latestValueCharacteristics && latestValueCharacteristics.length > 0) {
+    latestValueCharacteristics.forEach((char: any) => {
+      // Ajuste "char.value" se a sua API retornar a nota com outro nome de chave
+      valoresFormatados[char.key] = char.value;
+    });
+  }
+
+  // =========================================================================
+  // MOCK (DADOS FALSOS PARA TESTE)
+  // =========================================================================
+  
+  const valoresDeTeste = {
+     reliability: 90,             // Confiabilidade alta
+     maintainability: 20,         // Manutenibilidade baixa
+     performance_efficiency: 45,  // Eficiência média
+     security: 80,
+     usability: 60
+  };
+
+  // =========================================================================
 
   return (
     <>
