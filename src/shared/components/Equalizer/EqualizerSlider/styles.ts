@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export const StyledSlider = styled(Slider)({
   color: '#2B4D6F',
-  width: 14,
+  width: 30,
   '& .MuiSlider-track': {
     border: 'none',
     transition: `left 1s ease-in`,
