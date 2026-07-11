@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "key": "reliability",
+    "name": "Reliability",
+    "description": "Confiabilidade do produto.",
+    "latest": { "id": 10, "characteristic_id": 1, "value": 0.82, "created_at": "2026-02-01T12:00:00Z" }
+  },
+  {
+    "id": 2,
+    "key": "maintainability",
+    "name": "Maintainability",
+    "description": "Manutenibilidade do produto.",
+    "latest": { "id": 11, "characteristic_id": 2, "value": 0.71, "created_at": "2026-02-01T12:00:00Z" }
+  }
+]

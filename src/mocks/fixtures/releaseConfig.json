@@ -1,0 +1,45 @@
+{
+  "id": 1,
+  "name": "Release Config Mock",
+  "created_at": "2026-02-01T12:00:00Z",
+  "data": {
+    "characteristics": [
+      {
+        "key": "reliability",
+        "weight": 50,
+        "goal": 80,
+        "active": true,
+        "subcharacteristics": [
+          {
+            "key": "testing_status",
+            "weight": 100,
+            "active": true,
+            "measures": [
+              { "key": "passed_tests", "weight": 50, "metrics": [{ "key": "tests", "weight": 100 }] },
+              { "key": "test_builds", "weight": 25, "metrics": [{ "key": "test_execution_time", "weight": 100 }] },
+              { "key": "test_coverage", "weight": 25, "metrics": [{ "key": "coverage", "weight": 100 }] }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "maintainability",
+        "weight": 50,
+        "goal": 70,
+        "active": true,
+        "subcharacteristics": [
+          {
+            "key": "modifiability",
+            "weight": 100,
+            "active": true,
+            "measures": [
+              { "key": "non_complex_file_density", "weight": 33, "metrics": [{ "key": "complexity", "weight": 100 }] },
+              { "key": "commented_file_density", "weight": 33, "metrics": [{ "key": "comment_lines", "weight": 100 }] },
+              { "key": "duplication_absense", "weight": 34, "metrics": [{ "key": "duplicated_lines", "weight": 100 }] }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

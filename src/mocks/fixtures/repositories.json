@@ -1,0 +1,16 @@
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": "1",
+      "name": "2026.1-MeasureSoftGram-Front",
+      "description": "Repositorio de exemplo do modo mock.",
+      "url": "https://github.com/fga-eps-mds/2026.1-MeasureSoftGram-Front",
+      "platform": "github",
+      "imported": true,
+      "latest_values": []
+    }
+  ]
+}

@@ -167,6 +167,31 @@ pnpm build
 pnpm start
 ```
 
+## Rodar sem backend (modo mock)
+
+Precisa navegar pelas telas autenticadas sem subir Django nem Postgres? Use o
+modo mock, que intercepta as chamadas HTTP com o [MSW](https://mswjs.io/) e
+responde com fixtures versionadas em `src/mocks/`.
+
+```bash
+pnpm dev:mock
+```
+
+Aplicação disponível em http://localhost:3000 já autenticada (o modo mock semeia
+uma sessão fake no `localStorage`), sem nenhum backend no ar.
+
+Detalhes:
+
+- Ativado pela variável `NEXT_PUBLIC_API_MOCKING=enabled` (o script `dev:mock` já
+  a define, junto de um `NEXT_PUBLIC_API_URL` de exemplo). Sem essa variável o
+  código de mock fica inerte: `pnpm dev`, `pnpm build` e `pnpm test:all`
+  seguem batendo no backend real, sem qualquer interferência.
+- Os handlers ficam em `src/mocks/handlers.ts` e as fixtures em
+  `src/mocks/fixtures/`. Para cobrir uma tela nova, adicione o endpoint
+  correspondente ali.
+- O worker do service worker é o arquivo versionado `public/mockServiceWorker.js`
+  (gerado por `npx msw init public/`); não edite à mão.
+
 
 ## Rodar com Docker (stack completa)
 

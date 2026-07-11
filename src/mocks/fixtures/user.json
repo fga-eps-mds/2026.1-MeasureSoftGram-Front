@@ -1,0 +1,11 @@
+{
+  "id": 1,
+  "key": "mock-token-msg",
+  "username": "usuario-mock",
+  "first_name": "Usuario",
+  "last_name": "Mock",
+  "email": "usuario.mock@measuresoftgram.dev",
+  "avatar_url": "/images/svg/logo.svg",
+  "repos_url": "",
+  "organizations_url": ""
+}

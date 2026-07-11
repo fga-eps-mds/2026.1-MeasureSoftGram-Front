@@ -26,8 +26,14 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
 
+// Modo mock (issue #64): quando NEXT_PUBLIC_API_MOCKING === 'enabled', o worker
+// MSW precisa subir antes de qualquer render para interceptar as chamadas do
+// axios. Fora do modo mock o valor inicial ja e true e nada acontece.
+const isMockingEnabled = process.env.NEXT_PUBLIC_API_MOCKING === 'enabled';
+
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page) => page);
+  const [mockingReady, setMockingReady] = useState(!isMockingEnabled);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -38,6 +44,15 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     typeof window !== 'undefined' && window.localStorage.getItem('locale_lang')
 
   useSyncLanguage(locale);
+
+  // Sobe o worker MSW (client-only) e semeia a sessao fake antes de renderizar.
+  useEffect(() => {
+    if (!isMockingEnabled) return;
+    import('../mocks/initMocks')
+      .then(({ initMocks }) => initMocks())
+      .catch((error) => console.error('Falha ao iniciar o modo mock:', error))
+      .finally(() => setMockingReady(true));
+  }, []);
 
   const router = useRouter();
   const transformValue = 'translate(-50%, -50%)';
@@ -115,6 +130,10 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   }
 
   const { t } = useTranslation();
+
+  // No modo mock, espera o worker MSW estar pronto antes de montar os providers,
+  // garantindo que o AuthContext leia a sessao fake ja semeada.
+  if (!mockingReady) return null;
 
   return (
     <SnackbarProvider>

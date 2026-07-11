@@ -22,6 +22,7 @@ const customJestConfig = {
     '!<rootDir>/src/**/index.{ts,tsx}',
     '!<rootDir>/src/**/*.page.{ts,tsx}',
     '!<rootDir>/src/**/*.next.{ts,tsx}',
+    '!<rootDir>/src/mocks/**',
   ],
   testRegex: '((\\.|/*.)(spec))\\.tsx?$',
 
@@ -32,7 +33,8 @@ const customJestConfig = {
     '/Theme/',
     'index\\.(page\\.)?(ts|tsx)$',
     '/_app\\.tsx$',
-    '/_document\\.tsx$'
+    '/_document\\.tsx$',
+    '/mocks/'
   ],
 
   coverageDirectory: 'coverage',
