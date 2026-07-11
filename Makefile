@@ -1,11 +1,18 @@
 DOCKER_COMPOSE ?= docker compose
 SERVICE ?= front
 PNPM_IN_DOCKER = $(DOCKER_COMPOSE) run --rm $(SERVICE) pnpm
+# Stack completa de dev (front + Service + Postgres).
+COMPOSE_DEV = $(DOCKER_COMPOSE) -f docker-compose-dev.yml
+PNPM_VERSION ?= 9.0.0
 
-.PHONY: help build start lint test ci-test prettier update-snapshot pnpm
+.PHONY: help setup dev up down build start lint test ci-test prettier update-snapshot pnpm
 
 help:
 	@echo "Available targets:"
+	@echo "  make setup            # ativa pnpm (corepack), instala deps e cria .env"
+	@echo "  make dev              # sobe a stack completa (front + Service + Postgres) em foreground"
+	@echo "  make up               # sobe a stack completa em background"
+	@echo "  make down             # derruba a stack de dev"
 	@echo "  make build            # executes the build script"
 	@echo "  make start            # executes the start script"
 	@echo "  make lint             # executes the lint script"
@@ -14,6 +21,24 @@ help:
 	@echo "  make prettier         # executes the prettier script"
 	@echo "  make update-snapshot  # executes the update-snapshot script"
 	@echo "  make pnpm SCRIPT=<script> [ARGS=\"...\"]"
+
+# Prepara o ambiente local (host, sem Docker): pnpm via corepack + deps + .env.
+setup:
+	corepack enable
+	corepack prepare pnpm@$(PNPM_VERSION) --activate
+	pnpm install --frozen-lockfile
+	@test -f .env || cp .env.example .env
+	@echo ">>> ambiente pronto. Ajuste .env se precisar e rode 'make dev' (stack completa) ou 'pnpm dev'."
+
+# Sobe front + Service (imagem publicada) + Postgres num comando.
+dev:
+	$(COMPOSE_DEV) up
+
+up:
+	$(COMPOSE_DEV) up -d
+
+down:
+	$(COMPOSE_DEV) down
 
 build:
 	$(PNPM_IN_DOCKER) build

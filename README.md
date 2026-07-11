@@ -127,6 +127,8 @@ pnpm -v
 pnpm install
 ```
 
+> **Atalho:** `make setup` faz os passos 1 e 2 de uma vez (ativa o pnpm via corepack, instala as dependências com `--frozen-lockfile` e cria o `.env` a partir do `.env.example`).
+
 ### 3) Subir o projeto
 
 ```bash
@@ -164,6 +166,21 @@ pnpm typecheck
 pnpm build
 pnpm start
 ```
+
+
+## Rodar com Docker (stack completa)
+
+Para subir o Front junto com o **Service** (imagem publicada) e o **Postgres** num comando só, use o `docker-compose-dev.yml`. Há atalhos no `Makefile`:
+
+```bash
+make dev     # sobe front + Service + Postgres em foreground (com logs)
+make up      # o mesmo, em background (-d)
+make down    # derruba a stack
+```
+
+- Front em <http://localhost:3000>, Service em <http://localhost:8080>.
+- As credenciais do Service/Postgres ficam em `env-vars/.service.env` e `env-vars/.postgres.env` (já versionados com defaults de dev).
+- Para o login com GitHub funcionar, ajuste `GITHUB_CLIENT_ID`/`GITHUB_SECRET` (ver README do Service).
 
 
 ## Troubleshooting
