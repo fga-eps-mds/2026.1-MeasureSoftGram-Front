@@ -9,7 +9,9 @@
     "start": "next start",
     "lint": "next lint",
     "test": "TZ=America/Sao_Paulo jest src/ --watch --coverage --verbose --onlyChanged --passWithNoTests",
-    "ci:test": "TZ=America/Sao_Paulo jest --passWithNoTests --updateSnapshot",
+    "test:all": "TZ=America/Sao_Paulo jest --ci --coverage --passWithNoTests",
+    "ci:test": "TZ=America/Sao_Paulo jest --ci --passWithNoTests",
+    "typecheck": "tsc --noEmit",
     "prettier": "prettier --config .prettierrc 'src/**/*.ts' --write",
     "update-snapshot": "TZ=America/Sao_Paulo jest --updateSnapshot"
   },

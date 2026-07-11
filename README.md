@@ -27,7 +27,7 @@ Frontend repository of MeasureSoftGram application in 2026.1.
 ### Local development (without Docker)
 - Node.js `20.x`
 - `corepack` enabled
-- `pnpm` `10.x`
+- `pnpm` `9.0.0` (pin unico em `package.json` `packageManager` e no `Dockerfile`)
 ### Development with Docker
 - Docker
 - Docker Compose v.2
@@ -117,7 +117,7 @@ Primeiramente garanta que está utilizando a versão 20 do Node. Ferramentas par
 
 ```bash
 corepack enable
-corepack prepare pnpm@10.15.0 --activate
+corepack prepare pnpm@9.0.0 --activate
 pnpm -v
 ```
 
@@ -140,14 +140,24 @@ Aplicação disponível em: http://localhost:3000
 ```bash
 pnpm lint
 ```
-- Rodar testes:
+- Rodar testes (watch, so o que mudou - uso local):
 ```bash
 pnpm test
 ```
-- Rodar testes no modo CI:
+- Rodar a suite completa deterministica (mesmo modo do CI, sem reescrever snapshot):
 ```bash
-pnpm run ci:test
+pnpm test:all
 ```
+- Checar tipos (`tsc --noEmit`):
+```bash
+pnpm typecheck
+```
+
+> **Nota sobre o `typecheck`:** hoje o `tsc --noEmit` acusa erros de *parse* nos
+> type defs da `react-i18next` 15.x, que o TypeScript 4.7.4 (pin do projeto) nao
+> consegue ler; nao sao erros do codigo do projeto. Por isso o `typecheck` ainda
+> **nao** e gate bloqueante no CI. Subir o TypeScript pra destravar isso esta
+> rastreado numa issue de follow-up.
 
 - Build de produção:
 ```bash
